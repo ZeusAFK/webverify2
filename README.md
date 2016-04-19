@@ -4,12 +4,6 @@ With this project, we give everyone a free and reliable tool for monitoring webs
 
 If you like this project you can support us on patreon: https://www.patreon.com/zeusafk
 
-Project updates:
-Version: 1 [beta]
-
-- Added site ip verification
-- First code upload
-
 ![Alt text](http://i.imgur.com/rszxXE8.png "webverify2")
 
 # License
