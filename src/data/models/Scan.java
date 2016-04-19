@@ -10,6 +10,7 @@ public class Scan {
 	private Site site;
 	private Date start;
 	private Date end;
+	private String ip;
 	private int ocurrences;
 	private Date created;
 	private ScanStatus status;
@@ -44,6 +45,14 @@ public class Scan {
 
 	public void setEnd(Date end) {
 		this.end = end;
+	}
+	
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public int getOcurrences() {

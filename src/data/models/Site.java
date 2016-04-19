@@ -14,6 +14,7 @@ public class Site {
 	private int id;
 	private String name;
 	private String url;
+	private String ip;
 	private String description;
 	private User user;
 	private Date lastbuild;
@@ -27,6 +28,7 @@ public class Site {
 			this.id = Integer.valueOf(row.get("id").toString());
 			name = row.get("name").toString();
 			url = row.get("url").toString();
+			ip = row.get("ip").toString();
 			description = row.get("description").toString();
 			user = new User(Integer.valueOf(row.get("user").toString()));
 			lastbuild = (Date) row.get("lastbuild");
@@ -65,6 +67,14 @@ public class Site {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public String getDescription() {
@@ -110,7 +120,7 @@ public class Site {
 	public void Persist() {
 		if (id > 0) {
 			try {
-				InitializeTask.database.ExecuteProcedure("updateSiteById", id, name, url, description, lastbuild, status);
+				InitializeTask.database.ExecuteProcedure("updateSiteById", id, name, url, ip, description, lastbuild, status);
 			} catch (Exception e) {
 				StringUtils.printWarning("Error while persist data for site: " + id);
 				e.printStackTrace();

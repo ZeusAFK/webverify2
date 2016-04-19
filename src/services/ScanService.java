@@ -2,7 +2,7 @@ package services;
 
 import java.util.Date;
 
-import tasks.EmailSiteVerificationResultTask;
+import network.http.HttpRequest;
 import tasks.SiteVerificationTask;
 import utils.StringUtils;
 import data.collections.ScanAssetsCollection;
@@ -53,10 +53,24 @@ public class ScanService extends AbstractService implements Runnable {
 			schedule.getSite().getAssets().deleteAll(true);
 		}
 
+		HttpRequest request = new HttpRequest(schedule.getSite().getUrl());
+		String ipAddress = request.getIpAddress();
+
+		if (!schedule.isBuild()) {
+			if (!ipAddress.equals(schedule.getSite().getIp())) {
+				StringUtils.printWarning("Site ip address not match: " + schedule.getSite().getIp() + " original, " + ipAddress + " now");
+			} else {
+				StringUtils.printInfo("Site ip address match: " + ipAddress);
+			}
+		} else {
+			StringUtils.printInfo("Site ip address: " + ipAddress);
+		}
+
 		SiteVerificationTask verificationTask = new SiteVerificationTask(scan, schedule.isBuild(), schedule.isCrawl(), schedule.getId());
 		SiteVerificationResult result = verificationTask.performVerification();
 
 		if (schedule.isBuild()) {
+			schedule.getSite().setIp(ipAddress);
 			schedule.getSite().setLastbuild(new Date());
 			schedule.setBuild(false);
 			schedule.getSite().Persist();
@@ -67,8 +81,12 @@ public class ScanService extends AbstractService implements Runnable {
 
 		// TODO: Recompile results
 		// TODO: Schedule scan reporting
-		EmailSiteVerificationResultTask mailResults = new EmailSiteVerificationResultTask(schedule.getSite(), result);
-		mailResults.send();
+		if (!schedule.isBuild()) {
+			// TODO: This report is only for demo, implement a better new one.
+			// EmailSiteVerificationResultTask mailResults = new
+			// EmailSiteVerificationResultTask(schedule.getSite(), result);
+			// mailResults.send();
+		}
 
 		onDestroy();
 	}
