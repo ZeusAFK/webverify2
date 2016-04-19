@@ -18,6 +18,9 @@ package data.models;
 
 import java.util.Date;
 
+import tasks.InitializeTask;
+import utils.StringUtils;
+import data.collections.ScanAssetsCollection;
 import data.enums.ScanStatus;
 
 public class Scan {
@@ -30,6 +33,12 @@ public class Scan {
 	private int ocurrences;
 	private Date created;
 	private ScanStatus status;
+	private ScanAssetsCollection assets;
+
+	public Scan() {
+		assets = new ScanAssetsCollection();
+		status = ScanStatus.Created;
+	}
 
 	public int getId() {
 		return id;
@@ -62,7 +71,7 @@ public class Scan {
 	public void setEnd(Date end) {
 		this.end = end;
 	}
-	
+
 	public String getIp() {
 		return ip;
 	}
@@ -95,4 +104,25 @@ public class Scan {
 		this.status = status;
 	}
 
+	public void Persist() {
+		if (id == 0) {
+			try {
+				id = InitializeTask.database.ExecuteProcedure("createScanEntry", site.getId(), start, ip, ocurrences, status.getValue());
+			} catch (Exception e) {
+				StringUtils.printWarning("Error while persist data for scan: " + id);
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				InitializeTask.database.ExecuteProcedure("updateScanEntry", id, site.getId(), start, end, ip, ocurrences, status.getValue());
+			} catch (Exception e) {
+				StringUtils.printWarning("Error while persist data for scan: " + id);
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public ScanAssetsCollection getAssets() {
+		return assets;
+	}
 }

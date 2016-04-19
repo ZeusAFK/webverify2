@@ -19,10 +19,21 @@ package data.enums;
 public enum ScanStatus {
 	Created(1), Running(2), Failed(3), Completed(5), Deleted(0);
 
-	@SuppressWarnings("unused")
 	private int value;
 
 	private ScanStatus(int value) {
 		this.value = value;
+	}
+
+	public static ScanStatus fromValue(int value) throws IllegalArgumentException {
+		try {
+			return ScanStatus.values()[value];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new IllegalArgumentException("Unknown enum value :" + value);
+		}
+	}
+
+	public int getValue() {
+		return value;
 	}
 }

@@ -72,7 +72,34 @@ public class ScanAsset extends Asset {
 	}
 
 	public boolean persist() {
-		// TODO: Persist ScanAsset into database
-		return false;
+		if (super.getType().isDownload() && super.getLocation() == null)
+			return false;
+		if (super.getType() == null)
+			return false;
+
+		if (super.getId() > 0) {
+			try {
+				InitializeTask.database.ExecuteProcedure("updateScanAssetById", super.getId(), super.getType().getId(), super.getLocation(), super.getUrl(),
+						super.getSize(), super.getStatus());
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else {
+			try {
+				int id = InitializeTask.database.ExecuteProcedure("createScanAsset", scan.getId(), super.getType().getId(), super.getLocation(),
+						super.getUrl(), super.getSize());
+				if (id > 0) {
+					super.setId(id);
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 	}
 }

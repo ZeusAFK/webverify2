@@ -24,6 +24,14 @@ import data.models.ScanAsset;
 @SuppressWarnings("serial")
 public class ScanAssetsCollection extends ArrayList<ScanAsset> {
 
+	public ScanAsset findByUrl(String url) {
+		for (ScanAsset asset : this) {
+			if (asset.getUrl().equals(url))
+				return asset;
+		}
+		return null;
+	}
+
 	public void deleteAll(boolean storage) {
 		for (ScanAsset asset : this) {
 			if (!asset.delete(storage)) {
@@ -37,5 +45,18 @@ public class ScanAssetsCollection extends ArrayList<ScanAsset> {
 		if (!(asset).delete(storage)) {
 			StringUtils.printWarning("Error while deleting asset: " + asset.getId() + "in " + asset.getLocation());
 		}
+	}
+
+	public boolean persistAll() {
+		for (ScanAsset asset : this) {
+			asset.persist();
+		}
+		return true;
+	}
+
+	public boolean persist(int index) {
+		ScanAsset asset = (ScanAsset) this.get(index);
+		asset.persist();
+		return true;
 	}
 }

@@ -26,10 +26,12 @@ import data.models.Link;
 
 public class LinkToAssetConverter {
 
-	private int scheduleId;
+	private int id;
+	private String type;
 
-	public LinkToAssetConverter(int scheduleId) {
-		this.scheduleId = scheduleId;
+	public LinkToAssetConverter(int id, String type) {
+		this.id = id;
+		this.type = type;
 	}
 
 	public Asset getAsset(Link link, boolean store) {
@@ -37,7 +39,7 @@ public class LinkToAssetConverter {
 		if (http.Exists()) {
 			String contentType = http.getContentType();
 			AssetType type = new AssetType(contentType);
-			String location = StringUtils.getSha1("site:" + link.getUrl() + ":schedule:" + scheduleId);
+			String location = StringUtils.getSha1("site:" + link.getUrl() + ":" + this.type + ":" + id);
 
 			Asset asset = new Asset();
 			asset.setCreated(new Date());

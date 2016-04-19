@@ -48,14 +48,15 @@ public class SiteVerificationTask {
 
 		StringUtils.printInfo("Links found in " + scan.getSite().getUrl() + ": " + links.size());
 
-		LinkToAssetConverter converter = new LinkToAssetConverter(scheduleId);
+		LinkToAssetConverter converterSchedule = new LinkToAssetConverter(scheduleId, "schedule");
+		LinkToAssetConverter converterScan = new LinkToAssetConverter(scan.getId(), "scan");
 
 		if (storeAssets) {
 			if (links.size() > 0) {
 				StringUtils.printInfo("Site build enabled, storing assets from links found");
 				for (Link link : links) {
 					if (link.isActive() && !link.isExtern()) {
-						scan.getSite().getAssets().add(new SiteAsset(scan.getSite(), converter.getAsset(link, storeAssets)));
+						scan.getSite().getAssets().add(new SiteAsset(scan.getSite(), converterSchedule.getAsset(link, storeAssets)));
 					}
 				}
 				StringUtils.printInfo("Saving stored assets information into database");
@@ -68,8 +69,10 @@ public class SiteVerificationTask {
 			LinksCollection siteLinks = new LinksCollection();
 			for (Link link : links) {
 				if (!link.isExtern()) {
-					ScanAsset scanAsset = new ScanAsset(scan, converter.getAsset(link, false));
+					ScanAsset scanAsset = new ScanAsset(scan, converterScan.getAsset(link, true));
 					SiteAsset siteAsset = new SiteAsset(scan.getSite());
+
+					scan.getAssets().add(scanAsset);
 
 					String location = StringUtils.getSha1("site:" + link.getUrl() + ":schedule:" + scheduleId);
 
@@ -84,6 +87,10 @@ public class SiteVerificationTask {
 					}
 				}
 			}
+
+			StringUtils.printInfo("Saving scan assets information into database");
+			scan.getAssets().persistAll();
+
 			if (siteLinks.size() != scan.getSite().getAssets().size()) {
 				for (SiteAsset asset : scan.getSite().getAssets()) {
 					if (siteLinks.findByUrl(asset.getUrl()) == null) {

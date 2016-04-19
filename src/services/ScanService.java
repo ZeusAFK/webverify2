@@ -78,6 +78,9 @@ public class ScanService extends AbstractService implements Runnable {
 			} else {
 				StringUtils.printInfo("Site ip address match: " + ipAddress);
 			}
+			scan.setIp(ipAddress);
+			scan.setStatus(ScanStatus.Running);
+			scan.Persist();
 		} else {
 			StringUtils.printInfo("Site ip address: " + ipAddress);
 		}
@@ -93,6 +96,11 @@ public class ScanService extends AbstractService implements Runnable {
 		} else {
 			StringUtils.printInfo("Verification completed, links found: " + result.getLinks() + ", created: " + result.getCreated() + ", modified: "
 					+ result.getModified() + ", deleted: " + result.getDeleted());
+
+			scan.setOcurrences(result.getCreated() + result.getModified() + result.getDeleted());
+			scan.setEnd(new Date());
+			scan.setStatus(ScanStatus.Completed);
+			scan.Persist();
 		}
 
 		// TODO: Recompile results
