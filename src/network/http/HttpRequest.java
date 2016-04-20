@@ -167,8 +167,17 @@ public class HttpRequest {
 				String line;
 				BufferedReader br;
 				br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				boolean skip = false;
 				while ((line = br.readLine()) != null) {
-					response += line;
+					if (line.contains("<wb-skip>"))
+						skip = true;
+
+					if (!skip && !line.contains("<wb-skip/>")) {
+						response += line;
+					}
+
+					if (line.contains("</wb-skip>"))
+						skip = false;
 				}
 				br.close();
 				return response;
