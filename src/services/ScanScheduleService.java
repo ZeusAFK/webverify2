@@ -23,6 +23,7 @@ import java.util.HashMap;
 import data.collections.ScanSchedulesCollection;
 import data.collections.ScanServicesCollection;
 import data.enums.ScanScheduleStatus;
+import data.models.ConfigurationItem;
 import data.models.ScanSchedule;
 import data.models.Site;
 import data.models.User;
@@ -77,7 +78,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 								+ " minutes. Starting scan service.");
 					}
 
-					if (CURRENT_SCAN_THREADS < InitializeTask.configuration.MAX_SCANS_THREADS) {
+					if (CURRENT_SCAN_THREADS < Integer.valueOf(new ConfigurationItem("max_scan_threads").getValue())) {
 						ScanService scan = new ScanService(schedule);
 						new Thread(scan).start();
 					} else {

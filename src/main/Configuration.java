@@ -19,21 +19,17 @@ package main;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-import utils.StringUtils;
 import data.Database;
 
 public class Configuration {
 
 	public final int version = 1;
-	public final int MAX_SCANS_THREADS;
 
 	private Database database;
 	private Properties properties;
 
 	public Configuration(Properties properties) {
 		this.properties = properties;
-		MAX_SCANS_THREADS = Integer.valueOf(properties.getProperty("max_scan_threads"));
-		StringUtils.printInfo("Max scan threads set to " + MAX_SCANS_THREADS);
 	}
 
 	public int getApplicationVersion() {

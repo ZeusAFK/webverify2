@@ -21,17 +21,19 @@ import java.io.IOException;
 
 import main.Configuration;
 import data.DatabaseConnection;
+import data.models.ConfigurationItem;
 import utils.StringUtils;
 
 public class InitializeTask {
 
 	public static Configuration configuration;
 	public static DatabaseConnection database;
-	public static final String log_file = System.getProperty("user.dir") + System.getProperty("file.separator") + "logs" + System.getProperty("file.separator") + System.currentTimeMillis() + ".log";
+	public static final String log_file = System.getProperty("user.dir") + System.getProperty("file.separator") + "logs" + System.getProperty("file.separator")
+			+ System.currentTimeMillis() + ".log";
 
 	public void execute() {
 		System.out.println("Starting webverify2 community edition");
-		
+
 		// Creating log file
 		try {
 			File file = new File(log_file);
@@ -57,5 +59,9 @@ public class InitializeTask {
 		} else {
 			System.exit(0);
 		}
+
+		int max_scan_threads = Integer.valueOf(new ConfigurationItem("max_scan_threads").getValue());
+
+		StringUtils.printInfo("Max scan threads set to " + max_scan_threads);
 	}
 }

@@ -7,6 +7,6 @@
 	<classpathentry kind="lib" path="C:/Users/zeusafk/Documents/Eclipse projects/webverify/libs/mysql-connector-java-5.1.32-bin.jar"/>
 	<classpathentry kind="lib" path="C:/Users/zeusafk/Documents/Eclipse projects/webverify/libs/vngx-jsch-0.10.jar"/>
 	<classpathentry kind="lib" path="C:/Users/zeusafk/Documents/Eclipse projects/webverify/libs/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/zeusafk/Documents/Eclipse projects/webverify/libs/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/zeusafk/Documents/Eclipse projects/webverify/libs/javax.mail-1.5.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
