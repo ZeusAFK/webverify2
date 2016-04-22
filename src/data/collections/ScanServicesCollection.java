@@ -17,10 +17,34 @@ limitations under the License.
 package data.collections;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import services.ScanService;
 
-@SuppressWarnings("serial")
-public class ScanServicesCollection extends ArrayList<ScanService> {
+public class ScanServicesCollection extends Observable {
 
+	private ArrayList<ScanService> collection;
+
+	public ScanServicesCollection() {
+		collection = new ArrayList<ScanService>();
+	}
+
+	public void add(ScanService scan) {
+		collection.add(scan);
+		update();
+	}
+
+	public void remove(ScanService scan) {
+		collection.remove(scan);
+		update();
+	}
+
+	public int size() {
+		return collection.size();
+	}
+
+	public void update() {
+		setChanged();
+		notifyObservers();
+	}
 }

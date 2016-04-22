@@ -16,6 +16,7 @@ limitations under the License.
 
 package main;
 
+import services.CLIService;
 import services.ReportService;
 import services.ScanScheduleService;
 import tasks.InitializeTask;
@@ -29,6 +30,7 @@ public class MainServer {
 		// Services
 		new Thread(ReportService.getInstance()).start();
 		new Thread(ScanScheduleService.getInstance()).start();
+		new Thread(CLIService.getInstance()).start();
 	}
 
 }

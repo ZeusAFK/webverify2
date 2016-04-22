@@ -62,7 +62,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 	public void run() {
 		while (running) {
 			updateSchedulesList();
-			for (ScanSchedule schedule : schedules) {
+			for (ScanSchedule schedule : schedules.getCollection()) {
 				if (schedule.getStatus() != ScanScheduleStatus.Scanning) {
 					if (!schedule.getLimit().after(new Date())) {
 						StringUtils.printInfo("Scan schedule date limit expired: " + schedule.getId() + " url: " + schedule.getSite().getUrl());
@@ -153,6 +153,18 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 		scan.getSchedule().Persist();
 		scans.remove(scan);
 		CURRENT_SCAN_THREADS--;
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public ScanSchedulesCollection getSchedules() {
+		return schedules;
+	}
+
+	public ScanServicesCollection getScans() {
+		return scans;
 	}
 
 	public static ScanScheduleService getInstance() {

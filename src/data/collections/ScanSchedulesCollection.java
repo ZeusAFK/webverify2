@@ -17,17 +17,46 @@ limitations under the License.
 package data.collections;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import data.models.ScanSchedule;
 
-@SuppressWarnings("serial")
-public class ScanSchedulesCollection extends ArrayList<ScanSchedule> {
+public class ScanSchedulesCollection extends Observable {
+
+	private ArrayList<ScanSchedule> collection;
+
+	public ScanSchedulesCollection() {
+		collection = new ArrayList<ScanSchedule>();
+	}
+
+	public ArrayList<ScanSchedule> getCollection() {
+		return collection;
+	}
 
 	public ScanSchedule getById(int id) {
-		for (ScanSchedule schedule : this) {
+		for (ScanSchedule schedule : collection) {
 			if (schedule.getId() == id)
 				return schedule;
 		}
 		return null;
+	}
+
+	public void add(ScanSchedule schedule) {
+		collection.add(schedule);
+		update();
+	}
+
+	public void remove(ScanSchedule schedule) {
+		collection.remove(schedule);
+		update();
+	}
+
+	public int size() {
+		return collection.size();
+	}
+
+	public void update() {
+		setChanged();
+		notifyObservers();
 	}
 }
