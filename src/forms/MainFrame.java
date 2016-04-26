@@ -1,14 +1,15 @@
 package forms;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.ParseException;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jdownloader.gui.laf.jddefault.JDDefaultLookAndFeel;
 
@@ -19,32 +20,33 @@ public class MainFrame {
 	private JFrame frame;
 
 	private JDesktopPane desktopPaneDashboard;
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					String[] licenseInformation = { "Licensee=Annonymous", "LicenseRegistrationNumber=------", "Product=Synthetica",
-							"LicenseType=Non Commercial", "ExpireDate=--.--.----", "MaxVersion=999.999.999" };
-					UIManager.put("Synthetica.license.info", licenseInformation);
-					UIManager.put("Synthetica.license.key", "3F3ECAB3-35CA4FF1-0EDD14FC-293EC659-E6FFE9C1");
-					UIManager.setLookAndFeel(new JDDefaultLookAndFeel());
-
-					MainFrame window = new MainFrame();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JDesktopPane desktopPaneSchedules;
 
 	public MainFrame() {
+		String[] licenseInformation = { "Licensee=Annonymous", "LicenseRegistrationNumber=------", "Product=Synthetica", "LicenseType=Non Commercial",
+				"ExpireDate=--.--.----", "MaxVersion=999.999.999" };
+		UIManager.put("Synthetica.license.info", licenseInformation);
+		UIManager.put("Synthetica.license.key", "3F3ECAB3-35CA4FF1-0EDD14FC-293EC659-E6FFE9C1");
+		try {
+			UIManager.setLookAndFeel(new JDDefaultLookAndFeel());
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		initialize();
 	}
 
 	private void initialize() {
 		frame = new JFrame();
+		frame.setVisible(true);
+		int state = frame.getExtendedState();
+		state &= ~JFrame.ICONIFIED;
+		frame.setExtendedState(state);
+		frame.setAlwaysOnTop(true);
+		frame.toFront();
+		frame.requestFocus();
+		frame.setAlwaysOnTop(false);
 		// frame.setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/forms/resources/img/icons/Logo-icon.png")));
 
 		String revision = "";
@@ -96,5 +98,28 @@ public class MainFrame {
 		gbc_internalDashboardFrame.gridx = 0;
 		gbc_internalDashboardFrame.gridy = 0;
 		desktopPaneDashboard.add(internalDashboardFrame, gbc_internalDashboardFrame);
+
+		desktopPaneSchedules = new JDesktopPane();
+		desktopPaneSchedules.setBackground(Color.WHITE);
+		tabbedPane.addTab("Scan schedules", null, desktopPaneSchedules, null);
+
+		GridBagLayout gbl_desktopPaneSchedules = new GridBagLayout();
+		gbl_desktopPaneSchedules.columnWidths = new int[] { 514, 0 };
+		gbl_desktopPaneSchedules.rowHeights = new int[] { 559, 0 };
+		gbl_desktopPaneSchedules.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gbl_desktopPaneSchedules.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
+		desktopPaneSchedules.setLayout(gbl_desktopPaneSchedules);
+
+		ScanSchedulesFrame internalSchedulesFrame = new ScanSchedulesFrame();
+		internalSchedulesFrame.pack();
+		internalSchedulesFrame.setVisible(true);
+		internalSchedulesFrame.setAlignmentX(0);
+		internalSchedulesFrame.setAlignmentY(0);
+		((javax.swing.plaf.basic.BasicInternalFrameUI) internalSchedulesFrame.getUI()).setNorthPane(null);
+		GridBagConstraints gbc_internalSchedulesFrame = new GridBagConstraints();
+		gbc_internalSchedulesFrame.fill = GridBagConstraints.BOTH;
+		gbc_internalSchedulesFrame.gridx = 0;
+		gbc_internalSchedulesFrame.gridy = 0;
+		desktopPaneSchedules.add(internalSchedulesFrame, gbc_internalSchedulesFrame);
 	}
 }

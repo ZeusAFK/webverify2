@@ -17,7 +17,7 @@ limitations under the License.
 package data.enums;
 
 public enum ScanStatus {
-	Created(1), Running(2), Failed(3), Completed(5), Deleted(0);
+	Deleted(0), Created(1), Running(2), Failed(3), Completed(4), Building(5), Crawling(6), Checking(7), Downloading(8);
 
 	private int value;
 

@@ -55,10 +55,11 @@ public class AssetType {
 			mime = row.get("mime").toString();
 			description = row.get("description").toString();
 			download = Integer.valueOf(row.get("download").toString()) == 1;
+			binary = Integer.valueOf(row.get("binary").toString()) == 1;
 			status = Integer.valueOf(row.get("status").toString());
 		} catch (Exception e) {
-			StringUtils.printWarning("Error while loading asset type information: " + contentType);
-			e.printStackTrace();
+			StringUtils.printWarning("Asset type information not found: " + contentType);
+			id = 0;
 		}
 	}
 

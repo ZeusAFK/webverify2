@@ -69,7 +69,13 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 						continue;
 					}
 
-					int minutes_last_scan = ((int) ((new Date().getTime() / 60000) - (schedule.getLastScan().getTime() / 60000)));
+					int minutes_last_scan = 0;
+
+					try {
+						minutes_last_scan = ((int) ((new Date().getTime() / 60000) - (schedule.getLastScan().getTime() / 60000)));
+					} catch (Exception e) {
+						minutes_last_scan = schedule.getInterval();
+					}
 
 					if (schedule.getInterval() > minutes_last_scan) {
 						continue;
@@ -106,7 +112,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 				int priority = Integer.valueOf(result.get("priority").toString());
 				Site site = new Site(Integer.valueOf(result.get("site").toString()));
 				ScanScheduleStatus status = ScanScheduleStatus.fromValue(Integer.valueOf(result.get("status").toString()));
-				User user = new User(Integer.valueOf(result.get("site").toString()));
+				User user = new User(Integer.valueOf(result.get("user").toString()));
 				boolean build = Integer.valueOf(result.get("build").toString()) == 1;
 				boolean crawl = Integer.valueOf(result.get("crawl").toString()) == 1;
 
@@ -135,6 +141,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 				if (schedule.getStatus() == ScanScheduleStatus.Completed) {
 					schedule.setStatus(ScanScheduleStatus.Scheduled);
 				}
+				schedules.update();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -145,6 +152,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 		scans.add(scan);
 		scan.getSchedule().setStatus(ScanScheduleStatus.Scanning);
 		CURRENT_SCAN_THREADS++;
+		schedules.update();
 	}
 
 	public void notifyScanCompleted(ScanService scan) {
@@ -153,6 +161,7 @@ public class ScanScheduleService extends AbstractService implements Runnable {
 		scan.getSchedule().Persist();
 		scans.remove(scan);
 		CURRENT_SCAN_THREADS--;
+		schedules.update();
 	}
 
 	public boolean isRunning() {

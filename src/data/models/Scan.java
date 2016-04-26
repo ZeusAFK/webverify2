@@ -17,13 +17,14 @@ limitations under the License.
 package data.models;
 
 import java.util.Date;
+import java.util.Observable;
 
 import tasks.InitializeTask;
 import utils.StringUtils;
 import data.collections.ScanAssetsCollection;
 import data.enums.ScanStatus;
 
-public class Scan {
+public class Scan extends Observable {
 
 	private int id;
 	private Site site;
@@ -62,6 +63,7 @@ public class Scan {
 
 	public void setStart(Date start) {
 		this.start = start;
+		update();
 	}
 
 	public Date getEnd() {
@@ -70,6 +72,7 @@ public class Scan {
 
 	public void setEnd(Date end) {
 		this.end = end;
+		update();
 	}
 
 	public String getIp() {
@@ -78,6 +81,7 @@ public class Scan {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+		update();
 	}
 
 	public int getOcurrences() {
@@ -94,6 +98,7 @@ public class Scan {
 
 	public void setCreated(Date created) {
 		this.created = created;
+		update();
 	}
 
 	public ScanStatus getStatus() {
@@ -102,6 +107,7 @@ public class Scan {
 
 	public void setStatus(ScanStatus status) {
 		this.status = status;
+		update();
 	}
 
 	public void Persist() {
@@ -120,9 +126,15 @@ public class Scan {
 				e.printStackTrace();
 			}
 		}
+		update();
 	}
 
 	public ScanAssetsCollection getAssets() {
 		return assets;
+	}
+
+	public void update() {
+		setChanged();
+		notifyObservers();
 	}
 }

@@ -19,6 +19,7 @@ package tasks;
 import utils.StringUtils;
 import data.collections.LinksCollection;
 import data.enums.AssetVerificationResult;
+import data.models.Asset;
 import data.models.Link;
 import data.models.Scan;
 import data.models.ScanAsset;
@@ -56,7 +57,11 @@ public class SiteVerificationTask {
 				StringUtils.printInfo("Site build enabled, storing assets from links found");
 				for (Link link : links) {
 					if (link.isActive() && !link.isExtern()) {
-						scan.getSite().getAssets().add(new SiteAsset(scan.getSite(), converterSchedule.getAsset(link, storeAssets)));
+						Asset asset = converterSchedule.getAsset(link, storeAssets);
+						if (asset == null) {
+							continue;
+						}
+						scan.getSite().getAssets().add(new SiteAsset(scan.getSite(), asset));
 					}
 				}
 				StringUtils.printInfo("Saving stored assets information into database");
@@ -69,7 +74,11 @@ public class SiteVerificationTask {
 			LinksCollection siteLinks = new LinksCollection();
 			for (Link link : links) {
 				if (!link.isExtern()) {
-					ScanAsset scanAsset = new ScanAsset(scan, converterScan.getAsset(link, true));
+					Asset asset = converterScan.getAsset(link, true);
+					if (asset == null) {
+						continue;
+					}
+					ScanAsset scanAsset = new ScanAsset(scan, asset);
 					SiteAsset siteAsset = new SiteAsset(scan.getSite());
 
 					scan.getAssets().add(scanAsset);

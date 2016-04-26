@@ -39,6 +39,9 @@ public class LinkToAssetConverter {
 		if (http.Exists()) {
 			String contentType = http.getContentType();
 			AssetType type = new AssetType(contentType);
+			if (type.getId() == 0) {
+				return null;
+			}
 			String location = StringUtils.getSha1("site:" + link.getUrl() + ":" + this.type + ":" + id);
 
 			Asset asset = new Asset();

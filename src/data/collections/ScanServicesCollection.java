@@ -29,6 +29,14 @@ public class ScanServicesCollection extends Observable {
 		collection = new ArrayList<ScanService>();
 	}
 
+	public ScanService getById(int id) {
+		for (ScanService service : collection) {
+			if (service.getSchedule().getId() == id)
+				return service;
+		}
+		return null;
+	}
+
 	public void add(ScanService scan) {
 		collection.add(scan);
 		update();

@@ -1,6 +1,5 @@
 package forms;
 
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -21,19 +20,6 @@ public class DashboardFrame extends JInternalFrame {
 	private JLabel runningScansCountLabel;
 
 	private ScanScheduleService scanScheduleService;
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DashboardFrame window = new DashboardFrame();
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	public DashboardFrame() {
 		initialize();
@@ -62,25 +48,25 @@ public class DashboardFrame extends JInternalFrame {
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		scheduledScansCountLabel = new JLabel("Site scans scheduled: getting information");
+		scanScheduleService = ScanScheduleService.getInstance();
+
+		scheduledScansCountLabel = new JLabel("Site scans scheduled: " + scanScheduleService.getSchedules().size());
 		GridBagConstraints gbc_scheduledScansCountLabel = new GridBagConstraints();
 		gbc_scheduledScansCountLabel.gridwidth = 2;
 		gbc_scheduledScansCountLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_scheduledScansCountLabel.anchor = GridBagConstraints.WEST;
 		gbc_scheduledScansCountLabel.gridx = 0;
-		gbc_scheduledScansCountLabel.gridy = 1;
+		gbc_scheduledScansCountLabel.gridy = 0;
 		panel.add(scheduledScansCountLabel, gbc_scheduledScansCountLabel);
 
-		runningScansCountLabel = new JLabel("Active scans count: getting information");
+		runningScansCountLabel = new JLabel("Active scans count: " + scanScheduleService.getScans().size());
 		GridBagConstraints gbc_runningScansCountLabel = new GridBagConstraints();
 		gbc_runningScansCountLabel.gridwidth = 2;
 		gbc_runningScansCountLabel.insets = new Insets(0, 0, 5, 0);
 		gbc_runningScansCountLabel.anchor = GridBagConstraints.WEST;
 		gbc_runningScansCountLabel.gridx = 0;
-		gbc_runningScansCountLabel.gridy = 0;
+		gbc_runningScansCountLabel.gridy = 1;
 		panel.add(runningScansCountLabel, gbc_runningScansCountLabel);
-
-		scanScheduleService = ScanScheduleService.getInstance();
 
 		scanScheduleService.getSchedules().addObserver(new Observer() {
 			@Override
@@ -95,8 +81,5 @@ public class DashboardFrame extends JInternalFrame {
 				runningScansCountLabel.setText("Running scans: " + scanScheduleService.getScans().size());
 			}
 		});
-
-		scanScheduleService.getScans().update();
-		scanScheduleService.getSchedules().update();
 	}
 }

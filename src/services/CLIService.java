@@ -35,6 +35,7 @@ public class CLIService extends AbstractService implements Runnable {
 		running = true;
 		in = new Scanner(System.in);
 		StringUtils.printInfo("CLIService service started");
+		new MainFrame();
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class CLIService extends AbstractService implements Runnable {
 				}
 				case "startx": {
 					StringUtils.printInfo("Starting main server GUI");
-					MainFrame.main(null);
+					new MainFrame();
 					break;
 				}
 				default:

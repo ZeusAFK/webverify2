@@ -22,6 +22,7 @@ import network.http.HttpRequest;
 import tasks.SiteVerificationTask;
 import utils.StringUtils;
 import data.collections.ScanAssetsCollection;
+import data.enums.ScanScheduleStatus;
 import data.enums.ScanStatus;
 import data.models.Scan;
 import data.models.ScanSchedule;
@@ -73,6 +74,7 @@ public class ScanService extends AbstractService implements Runnable {
 		String ipAddress = request.getIpAddress();
 
 		if (!schedule.isBuild()) {
+			schedule.setStatus(ScanScheduleStatus.Scanning);
 			if (!ipAddress.equals(schedule.getSite().getIp())) {
 				StringUtils.printWarning("Site ip address not match: " + schedule.getSite().getIp() + " original, " + ipAddress + " now");
 			} else {
@@ -113,6 +115,14 @@ public class ScanService extends AbstractService implements Runnable {
 		}
 
 		onDestroy();
+	}
+
+	public Scan getScan() {
+		return scan;
+	}
+
+	public void setScan(Scan scan) {
+		this.scan = scan;
 	}
 
 	public ScanSchedule getSchedule() {

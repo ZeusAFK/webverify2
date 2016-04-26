@@ -17,12 +17,13 @@ limitations under the License.
 package data.models;
 
 import java.util.Date;
+import java.util.Observable;
 
 import tasks.InitializeTask;
 import utils.StringUtils;
 import data.enums.ScanScheduleStatus;
 
-public class ScanSchedule {
+public class ScanSchedule extends Observable {
 
 	private int id;
 	private Site site;
@@ -106,6 +107,7 @@ public class ScanSchedule {
 
 	public void setStatus(ScanScheduleStatus status) {
 		this.status = status;
+		update();
 	}
 
 	public Date getLastScan() {
@@ -114,6 +116,7 @@ public class ScanSchedule {
 
 	public void setLastScan(Date lastScan) {
 		this.lastScan = lastScan;
+		update();
 	}
 
 	public boolean isCrawl() {
@@ -133,5 +136,11 @@ public class ScanSchedule {
 				e.printStackTrace();
 			}
 		}
+		update();
+	}
+
+	public void update() {
+		setChanged();
+		notifyObservers();
 	}
 }

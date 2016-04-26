@@ -26,10 +26,8 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -220,12 +218,12 @@ public class HttpRequest {
 	public String getIpAddress() {
 		try {
 			return InetAddress.getByName(new URL(requestURL).getHost()).getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return null;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
+		} catch (Exception e) {
+			if (attempt()) {
+				return getIpAddress();
+			} else {
+				return null;
+			}
 		}
 	}
 
