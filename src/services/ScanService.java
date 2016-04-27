@@ -95,6 +95,7 @@ public class ScanService extends AbstractService implements Runnable {
 			schedule.getSite().setLastbuild(new Date());
 			schedule.setBuild(false);
 			schedule.getSite().Persist();
+			scan.update();
 		} else {
 			StringUtils.printInfo("Verification completed, links found: " + result.getLinks() + ", created: " + result.getCreated() + ", modified: "
 					+ result.getModified() + ", deleted: " + result.getDeleted());

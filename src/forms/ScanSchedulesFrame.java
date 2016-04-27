@@ -4,10 +4,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -21,7 +21,6 @@ import javax.swing.table.DefaultTableModel;
 
 import data.models.ScanSchedule;
 import services.ScanScheduleService;
-import utils.ThreadUtils;
 
 import javax.swing.JButton;
 
@@ -31,12 +30,12 @@ import java.awt.event.ActionEvent;
 @SuppressWarnings("serial")
 public class ScanSchedulesFrame extends JInternalFrame {
 
-	private JTable shedulesTable;
-	private MyTableModel schedulesListModel;
+	private JTable schedulesTable;
 	private ScanScheduleService scanScheduleService;
-	private boolean updating_schedules_table;
 
 	public ScanSchedulesFrame() {
+		scanScheduleService = ScanScheduleService.getInstance();
+
 		setBounds(100, 100, 541, 489);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
@@ -76,15 +75,6 @@ public class ScanSchedulesFrame extends JInternalFrame {
 		gbc_separator_1.gridy = 1;
 		panel.add(separator_1, gbc_separator_1);
 
-		schedulesListModel = new MyTableModel();
-		schedulesListModel.addColumn("Id");
-		schedulesListModel.addColumn("Site");
-		schedulesListModel.addColumn("Url");
-		schedulesListModel.addColumn("Ip");
-		schedulesListModel.addColumn("Scan interval");
-		schedulesListModel.addColumn("Last scan");
-		schedulesListModel.addColumn("Status");
-
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridheight = 7;
@@ -94,42 +84,20 @@ public class ScanSchedulesFrame extends JInternalFrame {
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
 
-		shedulesTable = new JTable();
-		shedulesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		shedulesTable.getTableHeader().setReorderingAllowed(false);
-		scrollPane.setViewportView(shedulesTable);
+		schedulesTable = new JTable(new ScanSchedulesTableModel(scanScheduleService.getSchedules().getCollection()));
+		schedulesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		schedulesTable.getTableHeader().setReorderingAllowed(false);
+		scrollPane.setViewportView(schedulesTable);
 
-		shedulesTable.setModel(schedulesListModel);
-
-		shedulesTable.getColumnModel().getColumn(0).setMaxWidth(0);
-		shedulesTable.getColumnModel().getColumn(0).setMinWidth(0);
-		shedulesTable.getColumnModel().getColumn(0).setPreferredWidth(0);
-
-		scanScheduleService = ScanScheduleService.getInstance();
-
-		updating_schedules_table = false;
-
-		scanScheduleService.getSchedules().addObserver(new Observer() {
-			@Override
-			public void update(Observable arg0, Object arg1) {
-				while (updating_schedules_table) {
-					ThreadUtils.sleep(100);
-				}
-				updating_schedules_table = true;
-				try {
-					updateSchedulesTable();
-				} catch (Exception e) {
-
-				}
-				updating_schedules_table = false;
-			}
-		});
+		schedulesTable.getColumnModel().getColumn(0).setMaxWidth(0);
+		schedulesTable.getColumnModel().getColumn(0).setMinWidth(0);
+		schedulesTable.getColumnModel().getColumn(0).setPreferredWidth(0);
 
 		JButton btnViewScanDetails = new JButton("Open selected scan");
 		btnViewScanDetails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (shedulesTable.getSelectedRow() >= 0) {
-					int schedule = Integer.valueOf(String.valueOf(shedulesTable.getValueAt(shedulesTable.getSelectedRow(), 0)));
+				if (schedulesTable.getSelectedRow() >= 0) {
+					int schedule = Integer.valueOf(String.valueOf(schedulesTable.getValueAt(schedulesTable.getSelectedRow(), 0)));
 					new ScanServiceFrame(schedule);
 				}
 			}
@@ -144,53 +112,80 @@ public class ScanSchedulesFrame extends JInternalFrame {
 		scanScheduleService.getSchedules().update();
 	}
 
-	public synchronized void updateSchedulesTable() {
-		schedulesListModel.setRowCount(0);
-		for (ScanSchedule schedule : scanScheduleService.getSchedules().getCollection()) {
-			Vector<String> row = new Vector<String>();
-			row.add(String.valueOf(schedule.getId()));
-			row.add(schedule.getSite().getName());
-			row.add(schedule.getSite().getUrl());
-			row.add(schedule.getSite().getIp());
-			row.add(String.valueOf(schedule.getInterval()) + " minute(s)");
-			try {
-				row.add(new SimpleDateFormat("yyyy/dd/MM HH:mm:ss").format(schedule.getLastScan()) + " ("
-						+ ((int) ((new Date().getTime() / 60000) - (schedule.getLastScan().getTime() / 60000))) + " minute(s) ago)");
-			} catch (Exception e) {
-				row.add("");
-			}
+	private class ScanSchedulesTableModel extends DefaultTableModel {
 
-			String scheduleStatus = "unknow";
-			switch (schedule.getStatus()) {
-			case Completed:
-				scheduleStatus = "Completed";
-				break;
-			case Deleted:
-				scheduleStatus = "Deleted";
-				break;
-			case Failed:
-				scheduleStatus = "Failed";
-				break;
-			case Scanning:
-				scheduleStatus = "Scanning";
-				break;
-			case Scheduled:
-				scheduleStatus = "Scheduled";
-				break;
-			default:
-				break;
-			}
-			row.add(scheduleStatus);
-			schedulesListModel.addRow(row);
+		private String[] columnNames = { "Id", "Site", "Url", "Ip", "Scan interval", "Last scan", "Status" };
+		private ArrayList<ScanSchedule> list;
+
+		public ScanSchedulesTableModel(ArrayList<ScanSchedule> list) {
+			this.list = list;
+			scanScheduleService.getSchedules().addObserver(new Observer() {
+				@Override
+				public void update(Observable arg0, Object arg1) {
+					fireTableDataChanged();
+				}
+			});
 		}
-	}
 
-	public class MyTableModel extends DefaultTableModel {
+		public int getColumnCount() {
+			return columnNames.length;
+		}
+
+		public int getRowCount() {
+			return list != null ? list.size() : 0;
+		}
+
+		public String getColumnName(int col) {
+			return columnNames[col];
+		}
 
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
 		}
 
+		public Object getValueAt(int row, int col) {
+			ScanSchedule schedule = list.get(row);
+			switch (col) {
+			case 0:
+				return schedule.getId();
+			case 1:
+				return schedule.getSite().getName();
+			case 2:
+				return schedule.getSite().getUrl();
+			case 3:
+				return schedule.getSite().getIp();
+			case 4:
+				return String.valueOf(schedule.getInterval()) + " minute(s)";
+			case 5:
+				try {
+					return new SimpleDateFormat("yyyy/dd/MM HH:mm:ss").format(schedule.getLastScan()) + " ("
+							+ ((int) ((new Date().getTime() / 60000) - (schedule.getLastScan().getTime() / 60000))) + " minute(s) ago)";
+				} catch (Exception e) {
+					return "";
+				}
+			case 6:
+				switch (schedule.getStatus()) {
+				case Completed:
+					return "Completed";
+				case Deleted:
+					return "Deleted";
+				case Failed:
+					return "Failed";
+				case Scanning:
+					return "Scanning";
+				case Scheduled:
+					return "Scheduled";
+				default:
+					return "";
+				}
+			default:
+				return "unknow";
+			}
+		}
+
+		public Class<? extends Object> getColumnClass(int c) {
+			return getValueAt(0, c).getClass();
+		}
 	}
 }
