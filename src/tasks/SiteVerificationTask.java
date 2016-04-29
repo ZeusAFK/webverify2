@@ -41,7 +41,8 @@ public class SiteVerificationTask {
 		this.crawl = crawl;
 		this.result = new SiteVerificationResult();
 		this.scheduleId = scheduleId;
-		links = new LinksCollection();
+		// links = new LinksCollection();
+		links = scan.getCrawlLinks();
 	}
 
 	public SiteVerificationResult performVerification() {
@@ -55,7 +56,7 @@ public class SiteVerificationTask {
 		if (storeAssets) {
 			if (links.size() > 0) {
 				StringUtils.printInfo("Site build enabled, storing assets from links found");
-				for (Link link : links) {
+				for (Link link : links.getCollection()) {
 					if (link.isActive() && !link.isExtern()) {
 						Asset asset = converterSchedule.getAsset(link, storeAssets);
 						if (asset == null) {
@@ -72,7 +73,7 @@ public class SiteVerificationTask {
 		} else {
 			StringUtils.printInfo("Starting links verification");
 			LinksCollection siteLinks = new LinksCollection();
-			for (Link link : links) {
+			for (Link link : links.getCollection()) {
 				if (!link.isExtern()) {
 					Asset asset = converterScan.getAsset(link, true);
 					if (asset == null) {
@@ -88,7 +89,7 @@ public class SiteVerificationTask {
 					if (!siteAsset.findByLocation(location)) {
 						this.result.addCreated();
 						StringUtils.printInfo("Created: " + link.getUrl());
-					} else if (siteLinks.add(link) && AssetIntegrityVerificationTask.verify(siteAsset, scanAsset) == AssetVerificationResult.Modified) {
+					} else if (siteLinks.add(link, false) && AssetIntegrityVerificationTask.verify(siteAsset, scanAsset) == AssetVerificationResult.Modified) {
 						this.result.addModified();
 						StringUtils.printInfo("Modified: " + link.getUrl());
 					} else {
@@ -119,7 +120,7 @@ public class SiteVerificationTask {
 		LinkGrabberTask task = new LinkGrabberTask(scan.getSite(), currentLink);
 		if (task.CheckLink(crawl)) {
 			LinksCollection task_links = task.getLinks();
-			for (Link link : task_links) {
+			for (Link link : task_links.getCollection()) {
 				if (links.add(link, true)) {
 					performLinkScanning(link, this.crawl);
 				}

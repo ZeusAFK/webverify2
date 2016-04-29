@@ -21,6 +21,7 @@ import java.util.Observable;
 
 import tasks.InitializeTask;
 import utils.StringUtils;
+import data.collections.LinksCollection;
 import data.collections.ScanAssetsCollection;
 import data.enums.ScanStatus;
 
@@ -35,9 +36,11 @@ public class Scan extends Observable {
 	private Date created;
 	private ScanStatus status;
 	private ScanAssetsCollection assets;
+	private LinksCollection crawlLinks;
 
 	public Scan() {
 		assets = new ScanAssetsCollection();
+		crawlLinks = new LinksCollection();
 		status = ScanStatus.Created;
 	}
 
@@ -131,6 +134,10 @@ public class Scan extends Observable {
 
 	public ScanAssetsCollection getAssets() {
 		return assets;
+	}
+
+	public LinksCollection getCrawlLinks() {
+		return crawlLinks;
 	}
 
 	public void update() {

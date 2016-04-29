@@ -44,7 +44,7 @@ public class LinkGrabberTask {
 		this.base_link = currentLink;
 		this.site = site;
 		links = new LinksCollection();
-		links.add(currentLink);
+		links.add(currentLink, false);
 	}
 
 	public boolean CheckLink(boolean crawl) {

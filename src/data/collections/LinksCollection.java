@@ -17,14 +17,20 @@ limitations under the License.
 package data.collections;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import data.models.Link;
 
-@SuppressWarnings("serial")
-public class LinksCollection extends ArrayList<Link> {
+public class LinksCollection extends Observable {
+
+	private ArrayList<Link> collection;
+
+	public LinksCollection() {
+		collection = new ArrayList<Link>();
+	}
 
 	public Link findByUrl(String url) {
-		for (Link link : this) {
+		for (Link link : collection) {
 			if (link.getUrl().equals(url))
 				return link;
 		}
@@ -34,23 +40,37 @@ public class LinksCollection extends ArrayList<Link> {
 	public boolean add(Link link, boolean override) {
 		if (override) {
 			if (this.getByUrl(link.getUrl()) == null) {
-				this.add(link);
+				collection.add(link);
+				update();
 				return true;
 			} else {
 				return false;
 			}
 		} else {
-			this.add(link);
+			collection.add(link);
 			return true;
 		}
 	}
 
 	public Link getByUrl(String url) {
-		for (Link link : this) {
+		for (Link link : collection) {
 			if (link.getUrl().equals(url)) {
 				return link;
 			}
 		}
 		return null;
+	}
+
+	public int size() {
+		return collection.size();
+	}
+
+	public ArrayList<Link> getCollection() {
+		return collection;
+	}
+	
+	public void update(){
+		setChanged();
+		notifyObservers();
 	}
 }
